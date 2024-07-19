@@ -291,3 +291,45 @@ select first_name, last_name, count(*) as number_of_duplicates
 from patients
 group by first_name, last_name
 having count(*) > 1; 
+
+/* Question 39: Display patient's full name, height in the units feet rounded to 1 decimal, 
+weight in the unit pounds rounded to 0 decimals, birth_date, gender non abbreviated.
+Convert CM to feet by dividing by 30.48. Convert KG to pounds by multiplying by 2.205. */
+
+select concat (first_name, ' ', last_name) as patient_name, 
+	round(height/30.48, 1) as height_feet, 
+    round(weight * 2.205, 0) as weight_pounds, birth_date,
+case 
+	when gender = 'M' then 'MALE' 
+    else 'FEMALE' 
+end as gender_type
+from patients; 
+
+/* Question 40: Show patient id, first name, last name from patients whose does not have any records in
+the admissions table. (Their patient id does not exist in any admissions.patient_id rows.) */
+
+select patients.patient_id, first_name, last_name
+from patients
+where patients.patient_id Not IN (select admissions.patient_id from admissions); 
+
+/* Question 41: Show all of the patients grouped into weight groups. Show the total amount of patients in 
+each weight group. 
+Order the list by the weight group descending. For example, if they weigh 100 to 109 they are placed in the 
+100 weight group, 110-119 = 110 weight group, etc. */
+
+select (weight/10)*10 as weight_group, count(*) as patients_in_weight_group
+from patients
+group by weight_group
+order by weight_group desc; 
+
+/* Question 41: Show patient id, weight, height, isObese from the patients table. Display isObese as a boolean 0 or 1. 
+Obese is defined as weight(kg)/(height(m)^2)>=30. 
+weight is in units kg. height is units cm. */ 
+
+select patient_id, weight, height, 
+	case
+    	when weight/power(height/100.00,2) >=30
+        	then 1
+        else 0
+        end as isobese
+from patients; 
